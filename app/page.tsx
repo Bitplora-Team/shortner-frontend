@@ -1,103 +1,176 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Link2, Check } from "lucide-react"
+import { LinkService } from "@/lib/api"
+
+export default function HomePage() {
+  const { user, logout } = useAuth()
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="min-h-screen bg-gray-900">
+      {/* Header */}
+      <header className="bg-gray-800 border-b border-gray-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <Link2 className="h-8 w-8 text-blue-400 mr-2" />
+              <span className="text-xl font-bold text-white">LinkShortener</span>
+            </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <nav className="hidden md:flex space-x-8">
+              <Link href="/" className="text-white">
+                Home
+              </Link>
+              <Link href="/how-it-works" className="text-gray-300 hover:text-white transition-colors">
+                How it works
+              </Link>
+              <Link href="/purpose" className="text-gray-300 hover:text-white transition-colors">
+                Security
+              </Link>
+            </nav>
+
+            {user ? (
+              <div className="flex items-center space-x-4">
+                <span className="text-gray-300">Welcome, {user.firstName}</span>
+                <Button asChild className="bg-blue-600 text-white hover:bg-blue-700">
+                  <Link href="/dashboard">Dashboard</Link>
+                </Button>
+                <Button
+                  onClick={logout}
+                  variant="outline"
+                  className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+                >
+                  Logout
+                </Button>
+              </div>
+            ) : (
+              <Button asChild variant="outline" className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600">
+                <Link href="/auth">Sign In</Link>
+              </Button>
+            )}
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+      </header>
+
+      {/* Hero Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-800 to-gray-900">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+                Shorten your links easily and quickly!
+              </h1>
+              <p className="text-lg text-gray-300 mb-8">
+                Create short links effortlessly with our tool. Secure your links from unauthorized access with IP-based
+                protection and advanced security features.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button asChild size="lg" className="bg-blue-600 text-white hover:bg-blue-700">
+                  <Link href="/shorten">Get started</Link>
+                </Button>
+                <Button
+                  asChild
+                  size="lg"
+                  variant="outline"
+                  className="border-gray-600 text-white hover:bg-gray-700 bg-transparent"
+                >
+                  <Link href="/how-it-works">How it works</Link>
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex justify-center lg:justify-end">
+              <div className="w-64 h-64 flex items-center justify-center">
+                <Link2 className="w-48 h-48 text-blue-400 opacity-80" strokeWidth={1} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-800">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Card className="bg-gray-700 border-gray-600 shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="text-sm text-gray-400 mb-1">Links secured</p>
+                    <p className="text-3xl font-bold text-white">1.8M+</p>
+                  </div>
+                  <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center">
+                    <Check className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-700 border-gray-600 shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="text-sm text-gray-400 mb-1">Links shortened</p>
+                    <p className="text-3xl font-bold text-white">2M+</p>
+                  </div>
+                  <Link2 className="w-12 h-12 text-gray-400" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-700 border-gray-600 shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="text-sm text-gray-400 mb-1">Threats blocked</p>
+                    <p className="text-3xl font-bold text-white">15K+</p>
+                  </div>
+                  <Check className="w-12 h-12 text-gray-400" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-12 px-4 sm:px-6 lg:px-8 border-t border-gray-700">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <h3 className="text-lg font-semibold mb-4 text-white">Welcome : User</h3>
+              <p className="text-gray-400">Simplifying your links</p>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-4 text-white">About</h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link href="/how-it-works" className="text-gray-400 hover:text-white transition-colors">
+                    How it Works
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/purpose" className="text-gray-400 hover:text-white transition-colors">
+                    Security
+                  </Link>
+                </li>
+                <li>
+                  <a
+                    href="mailto:laxman.suthar.dev@gmail.com"
+                    className="text-gray-400 hover:text-white transition-colors"
+                  >
+                    Contact: laxman.suthar.dev@gmail.com
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </footer>
     </div>
-  );
+  )
 }

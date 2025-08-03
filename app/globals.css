@@ -1,26 +1,139 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 94.1%;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Custom gradient background for hero section */
+section:first-of-type {
+  background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+}
+
+/* Dark theme styles for react-datepicker */
+.react-datepicker-popper-dark .react-datepicker {
+  background-color: #4b5563;
+  border: 1px solid #6b7280;
+  color: white;
+}
+
+.react-datepicker-popper-dark .react-datepicker__header {
+  background-color: #374151;
+  border-bottom: 1px solid #6b7280;
+}
+
+.react-datepicker-popper-dark .react-datepicker__current-month,
+.react-datepicker-popper-dark .react-datepicker-time__header {
+  color: white;
+}
+
+.react-datepicker-popper-dark .react-datepicker__day-name,
+.react-datepicker-popper-dark .react-datepicker__day,
+.react-datepicker-popper-dark .react-datepicker__time-name {
+  color: white;
+}
+
+.react-datepicker-popper-dark .react-datepicker__day:hover {
+  background-color: #6b7280;
+}
+
+.react-datepicker-popper-dark .react-datepicker__day--selected,
+.react-datepicker-popper-dark .react-datepicker__day--in-selecting-range,
+.react-datepicker-popper-dark .react-datepicker__day--in-range {
+  background-color: #2563eb;
+  color: white;
+}
+
+.react-datepicker-popper-dark .react-datepicker__time-container {
+  border-left: 1px solid #6b7280;
+}
+
+.react-datepicker-popper-dark .react-datepicker__time {
+  background-color: #4b5563;
+}
+
+.react-datepicker-popper-dark .react-datepicker__time-box {
+  background-color: #4b5563;
+}
+
+.react-datepicker-popper-dark .react-datepicker__time-list-item {
+  color: white;
+}
+
+.react-datepicker-popper-dark .react-datepicker__time-list-item:hover {
+  background-color: #6b7280;
+}
+
+.react-datepicker-popper-dark .react-datepicker__time-list-item--selected {
+  background-color: #2563eb;
+  color: white;
+}
+
+.react-datepicker-popper-dark .react-datepicker__navigation {
+  border: 0.45rem solid transparent;
+}
+
+.react-datepicker-popper-dark .react-datepicker__navigation--previous {
+  border-right-color: white;
+}
+
+.react-datepicker-popper-dark .react-datepicker__navigation--next {
+  border-left-color: white;
+}
+
+.react-datepicker-popper-dark .react-datepicker__day--disabled {
+  color: #9ca3af;
 }
