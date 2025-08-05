@@ -9,6 +9,9 @@ import { useAuth } from "@/lib/auth"
 export default function HomePage() {
   const { user, logout } = useAuth()
 
+  if (typeof window === "undefined") {
+    return null // Prevent rendering on server
+  }
 
   return (
     <div className="min-h-screen bg-gray-900">
@@ -33,7 +36,7 @@ export default function HomePage() {
               </Link>
             </nav>
 
-            {user ? (
+            {typeof window !== "undefined" && user ? (
               <div className="flex items-center space-x-4">
                 <span className="text-gray-300">Welcome, {user.firstName}</span>
                 <Button asChild className="bg-blue-600 text-white hover:bg-blue-700">
