@@ -6,39 +6,77 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Link2, BarChart3, Eye, MousePointer, Calendar, Copy, ExternalLink, Settings, Trash2 } from "lucide-react"
 import { ProtectedRoute } from "@/components/protected-route"
 import { useAuth } from "@/lib/auth"
+import { LinkService, LinkData } from "@/lib/api"
+import { useState, useEffect } from "react"
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"
+import { format } from "date-fns";
 
 export default function DashboardPage() {
   const { user, logout } = useAuth()
+  const [links, setLinks] = useState<LinkData[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const links = [
-    {
-      id: 1,
-      originalUrl: "https://example.com/very-long-url-that-was-shortened",
-      shortUrl: "https://short.ly/abc123",
-      clicks: 1247,
-      views: 2156,
-      created: "2024-01-15",
-      status: "Active",
-    },
-    {
-      id: 2,
-      originalUrl: "https://another-example.com/another-very-long-url",
-      shortUrl: "https://short.ly/def456",
-      clicks: 856,
-      views: 1432,
-      created: "2024-01-10",
-      status: "Active",
-    },
-    {
-      id: 3,
-      originalUrl: "https://test-site.com/some-page-with-long-parameters",
-      shortUrl: "https://short.ly/ghi789",
-      clicks: 234,
-      views: 567,
-      created: "2024-01-08",
-      status: "Expired",
-    },
-  ]
+  useEffect(() => {
+    const fetchUserLinks = async () => {
+      try {
+        const data = await LinkService.getUserLinks();
+        setLinks(data);
+      } catch (err) {
+        console.error("Error fetching user links:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserLinks();
+  }, []);
+
+  const totalClicks = links?.reduce((acc, cur) => acc + (cur?.click_count || 0), 0);
+  const totalViews = links?.reduce((acc, cur) => acc + (cur?.views || 0), 0);
+
+
+  const handleDelete = async (shortened: string) => {
+    if (!confirm("Are you sure you want to delete this link?")) return;
+
+    try {
+      await LinkService.deleteLink(shortened);
+      setLinks((prev) => prev.filter((link) => link.shortened !== shortened)); // remove from UI
+    } catch (err) {
+      console.error("Delete failed:", err);
+      alert("Failed to delete link.");
+    }
+  };
+
+  // const links = [
+  //   {
+  //     id: 1,
+  //     originalUrl: "https://example.com/very-long-url-that-was-shortened",
+  //     shortUrl: "https://short.ly/abc123",
+  //     clicks: 1247,
+  //     views: 2156,
+  //     created: "2024-01-15",
+  //     status: "Active",
+  //   },
+  //   {
+  //     id: 2,
+  //     originalUrl: "https://another-example.com/another-very-long-url",
+  //     shortUrl: "https://short.ly/def456",
+  //     clicks: 856,
+  //     views: 1432,
+  //     created: "2024-01-10",
+  //     status: "Active",
+  //   },
+  //   {
+  //     id: 3,
+  //     originalUrl: "https://test-site.com/some-page-with-long-parameters",
+  //     shortUrl: "https://short.ly/ghi789",
+  //     clicks: 234,
+  //     views: 567,
+  //     created: "2024-01-08",
+  //     status: "Expired",
+  //   },
+
+  // ]
 
   return (
     <ProtectedRoute>
@@ -102,7 +140,7 @@ export default function DashboardPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-400 mb-1">Total Links</p>
-                    <p className="text-3xl font-bold text-white">12</p>
+                    <p className="text-3xl font-bold text-white">{links.length}</p>
                   </div>
                   <Link2 className="w-12 h-12 text-blue-400" />
                 </div>
@@ -114,7 +152,7 @@ export default function DashboardPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-400 mb-1">Total Clicks</p>
-                    <p className="text-3xl font-bold text-white">2,337</p>
+                    <p className="text-3xl font-bold text-white">{totalClicks}</p>
                   </div>
                   <MousePointer className="w-12 h-12 text-green-400" />
                 </div>
@@ -126,7 +164,7 @@ export default function DashboardPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-400 mb-1">Total Views</p>
-                    <p className="text-3xl font-bold text-white">4,155</p>
+                    <p className="text-3xl font-bold text-white">{totalViews}</p>
                   </div>
                   <Eye className="w-12 h-12 text-purple-400" />
                 </div>
@@ -145,30 +183,29 @@ export default function DashboardPage() {
             <CardContent>
               <div className="space-y-4">
                 {links.map((link) => (
-                  <div key={link.id} className="bg-gray-700 rounded-lg p-4 border border-gray-600">
+                  <div key={link.link} className="bg-gray-700 rounded-lg p-4 border border-gray-600">
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-2">
-                          <span className="text-sm font-medium text-blue-400">{link.shortUrl}</span>
+                          <span className="text-sm font-medium text-blue-400">{link.shortened}</span>
                           <span
-                            className={`px-2 py-1 text-xs rounded-full ${
-                              link.status === "Active" ? "bg-green-900 text-green-300" : "bg-red-900 text-red-300"
-                            }`}
+                            className={`px-2 py-1 text-xs rounded-full ${link.status === true ? "bg-green-900 text-green-300" : "bg-red-900 text-red-300"
+                              }`}
                           >
-                            {link.status}
+                            {link.status ? "Active" : "Inactive"}
                           </span>
                         </div>
-                        <p className="text-sm text-gray-300 truncate" title={link.originalUrl}>
+                        <p className="text-sm text-gray-300 truncate" title={link.link}>
                           {link.originalUrl}
                         </p>
                         <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
                           <span className="flex items-center gap-1">
                             <Calendar className="w-3 h-3" />
-                            {link.created}
+                            {format(new Date(link.created_at), "dd MMM, yyyy hh:mm a")}
                           </span>
                           <span className="flex items-center gap-1">
                             <MousePointer className="w-3 h-3" />
-                            {link.clicks} clicks
+                            {link.click_count} clicks
                           </span>
                           <span className="flex items-center gap-1">
                             <Eye className="w-3 h-3" />
@@ -182,7 +219,7 @@ export default function DashboardPage() {
                           size="sm"
                           variant="outline"
                           className="border-gray-600 text-gray-300 hover:bg-gray-600 bg-transparent"
-                          onClick={() => navigator.clipboard.writeText(link.shortUrl)}
+                          onClick={() => navigator.clipboard.writeText(API_BASE_URL + '/links/redirect/' + link.shortened)}
                         >
                           <Copy className="w-4 h-4" />
                         </Button>
@@ -192,7 +229,7 @@ export default function DashboardPage() {
                           variant="outline"
                           className="border-gray-600 text-gray-300 hover:bg-gray-600 bg-transparent"
                         >
-                          <a href={link.shortUrl} target="_blank" rel="noopener noreferrer">
+                          <a href={API_BASE_URL + '/links/redirect/' + link.shortened} target="_blank" rel="noopener noreferrer">
                             <ExternalLink className="w-4 h-4" />
                           </a>
                         </Button>
@@ -209,7 +246,7 @@ export default function DashboardPage() {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="border-red-600 text-red-400 hover:bg-red-900 bg-transparent"
+                          className="border-red-600 text-red-400 hover:bg-red-900 bg-transparent" onClick={() => handleDelete(link.shortened)}
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>

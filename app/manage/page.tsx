@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -8,72 +7,102 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Link2, Home, Clipboard, LogOut, X, Calendar, BarChart3, Archive, Trash2, Edit3, Save } from "lucide-react"
+import { LinkService, LinkData } from "@/lib/api"
+import { useState, useEffect } from "react"
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"
+import { format } from "date-fns";
 
 export default function ManagePage() {
   const [selectedLink, setSelectedLink] = useState<any>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [editForm, setEditForm] = useState<any>({})
+  const user = JSON.parse(localStorage.getItem("auth_user") || "{}");
+
+  const [userLinks, setLinks] = useState<LinkData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserLinks = async () => {
+      try {
+        const data = await LinkService.getUserLinks();
+        setLinks(data);
+      } catch (err) {
+        console.error("Error fetching user links:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserLinks();
+  }, []);
 
   // Mock data for user's links
-  const userLinks = [
-    {
-      id: 1,
-      originalUrl: "https://example.com/very-long-url-that-was-shortened-for-better-sharing",
-      shortUrl: "https://short.ly/abc123",
-      title: "Marketing Campaign Landing Page",
-      status: "Active",
-      clicks: 1247,
-      views: 2156,
-      created: "2024-01-15",
-      lastModified: "2024-01-20",
-      expirationDate: "2024-12-31",
-      isPublic: true,
-    },
-    {
-      id: 2,
-      originalUrl: "https://docs.company.com/internal-documentation-system",
-      shortUrl: "https://short.ly/def456",
-      title: "Internal Documentation",
-      status: "Active",
-      clicks: 856,
-      views: 1432,
-      created: "2024-01-10",
-      lastModified: "2024-01-18",
-      expirationDate: "",
-      isPublic: false,
-    },
-    {
-      id: 3,
-      originalUrl: "https://test-site.com/beta-feature-testing-environment",
-      shortUrl: "https://short.ly/ghi789",
-      title: "Beta Testing Environment",
-      status: "Inactive",
-      clicks: 234,
-      views: 567,
-      created: "2024-01-08",
-      lastModified: "2024-01-15",
-      expirationDate: "2024-01-25",
-      isPublic: false,
-    },
-  ]
+  // const userLinks = [
+  //   {
+  //     id: 1,
+  //     originalUrl: "https://example.com/very-long-url-that-was-shortened-for-better-sharing",
+  //     shortUrl: "https://short.ly/abc123",
+  //     title: "Marketing Campaign Landing Page",
+  //     status: "Active",
+  //     clicks: 1247,
+  //     views: 2156,
+  //     created: "2024-01-15",
+  //     lastModified: "2024-01-20",
+  //     expirationDate: "2024-12-31",
+  //     isPublic: true,
+  //   },
+  //   {
+  //     id: 2,
+  //     originalUrl: "https://docs.company.com/internal-documentation-system",
+  //     shortUrl: "https://short.ly/def456",
+  //     title: "Internal Documentation",
+  //     status: "Active",
+  //     clicks: 856,
+  //     views: 1432,
+  //     created: "2024-01-10",
+  //     lastModified: "2024-01-18",
+  //     expirationDate: "",
+  //     isPublic: false,
+  //   },
+  //   {
+  //     id: 3,
+  //     originalUrl: "https://test-site.com/beta-feature-testing-environment",
+  //     shortUrl: "https://short.ly/ghi789",
+  //     title: "Beta Testing Environment",
+  //     status: "Inactive",
+  //     clicks: 234,
+  //     views: 567,
+  //     created: "2024-01-08",
+  //     lastModified: "2024-01-15",
+  //     expirationDate: "2024-01-25",
+  //     isPublic: false,
+  //   },
+  // ]
 
-  const recentUpdates = [
-    { type: "Link shortened", description: "User generated a short link", time: "4 hours ago", icon: Link2 },
-    { type: "Link analytics", description: "User clicked a short link", time: "8 hours ago", icon: BarChart3 },
-    { type: "Monthly report", description: "User viewed link stats", time: "1 day ago", icon: Calendar },
-  ]
+  // const recentUpdates = [
+  //   { type: "Link shortened", description: "User generated a short link", time: "4 hours ago", icon: Link2 },
+  //   { type: "Link analytics", description: "User clicked a short link", time: "8 hours ago", icon: BarChart3 },
+  //   { type: "Monthly report", description: "User viewed link stats", time: "1 day ago", icon: Calendar },
+  // ]
 
   const handleEditLink = (link: any) => {
     setSelectedLink(link)
     setEditForm({ ...link })
     setIsEditing(true)
   }
-
+  
   const handleSaveChanges = () => {
-    // Here you would save the changes to your backend
-    console.log("Saving changes:", editForm)
-    setIsEditing(false)
-    setSelectedLink({ ...editForm })
+    try {
+      const updated =  LinkService.updateLink(editForm.shortened!, editForm);
+
+      console.log("Saved:", updated);
+
+      setSelectedLink(updated);
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Update failed:", error);
+      alert("Failed to update the link.");
+    }
   }
 
   const handleCloseModal = () => {
@@ -119,7 +148,7 @@ export default function ManagePage() {
 
             <div className="flex items-center px-3 py-2 text-white bg-blue-600 rounded-md">
               <BarChart3 className="w-4 h-4 mr-3" />
-              Dashboard
+              Manage
             </div>
 
             <div className="px-3 py-4 border-t border-gray-700 mt-4">
@@ -127,11 +156,11 @@ export default function ManagePage() {
               <div className="space-y-2">
                 <div className="flex items-center">
                   <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mr-3">
-                    <span className="text-white text-sm font-medium">JD</span>
+                    <span className="text-white text-sm font-medium">{user.first_name?.[0]?.toUpperCase()}{user.last_name?.[0]?.toUpperCase()}</span>
                   </div>
                   <div>
-                    <p className="text-white text-sm font-medium">John Doe</p>
-                    <p className="text-gray-400 text-xs">john.doe@example.com</p>
+                    <p className="text-white text-sm font-medium">{user.first_name + ' ' + user.last_name}</p>
+                    <p className="text-gray-400 text-xs">{user.email}</p>
                   </div>
                 </div>
               </div>
@@ -151,7 +180,7 @@ export default function ManagePage() {
         <div className="flex-1 p-6">
           <div className="max-w-4xl mx-auto">
             {/* Recent Updates */}
-            <Card className="bg-gray-800 border-gray-700 mb-6">
+            {/* <Card className="bg-gray-800 border-gray-700 mb-6">
               <CardHeader>
                 <CardTitle className="text-white flex items-center justify-between">
                   Recent updates
@@ -159,7 +188,7 @@ export default function ManagePage() {
                     ⋯
                   </Button>
                 </CardTitle>
-              </CardHeader>
+              </CardH3eader>
               <CardContent>
                 <div className="space-y-4">
                   {recentUpdates.map((update, index) => (
@@ -176,7 +205,7 @@ export default function ManagePage() {
                   ))}
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
 
             {/* User Links */}
             <Card className="bg-gray-800 border-gray-700">
@@ -191,15 +220,14 @@ export default function ManagePage() {
                         <div className="flex items-center space-x-3">
                           <h3 className="text-white font-semibold">{link.title}</h3>
                           <span
-                            className={`px-2 py-1 text-xs rounded-full ${
-                              link.status === "Active"
+                            className={`px-2 py-1 text-xs rounded-full ${link.status
                                 ? "bg-green-900 text-green-300"
-                                : link.status === "Inactive"
+                                : link.status == false
                                   ? "bg-red-900 text-red-300"
                                   : "bg-gray-600 text-gray-300"
-                            }`}
+                              }`}
                           >
-                            {link.status}
+                            {link.status ? "Active" : "Inactive"}
                           </span>
                         </div>
                         <Button
@@ -216,16 +244,16 @@ export default function ManagePage() {
                       <div className="space-y-2 text-sm">
                         <div>
                           <span className="text-gray-400">Short URL: </span>
-                          <span className="text-blue-400 font-mono">{link.shortUrl}</span>
+                          <span className="text-blue-400 font-mono">{API_BASE_URL + '/links/redirect/' + link.shortened}</span>
                         </div>
                         <div>
                           <span className="text-gray-400">Original: </span>
-                          <span className="text-gray-300 truncate block">{link.originalUrl}</span>
+                          <span className="text-gray-300 truncate block">{link.link}</span>
                         </div>
                         <div className="flex items-center space-x-4 text-xs text-gray-400">
-                          <span>{link.clicks} clicks</span>
+                          <span>{link.click_count} clicks</span>
                           <span>{link.views} views</span>
-                          <span>Created: {link.created}</span>
+                          <span>Created: {format(new Date(link.created_at), "dd MMM, yyyy hh:mm a")}</span>
                         </div>
                       </div>
                     </div>
@@ -259,7 +287,7 @@ export default function ManagePage() {
                   <div>
                     <Label className="text-white text-sm">Original URL (Read-only)</Label>
                     <Input
-                      value={selectedLink.originalUrl}
+                      value={selectedLink.link}
                       readOnly
                       className="bg-gray-600 border-gray-500 text-gray-300 cursor-not-allowed mt-1"
                     />
@@ -268,7 +296,7 @@ export default function ManagePage() {
                   <div>
                     <Label className="text-white text-sm">Short URL (Read-only)</Label>
                     <Input
-                      value={selectedLink.shortUrl}
+                      value={API_BASE_URL + '/links/redirect/' + selectedLink.shortened}
                       readOnly
                       className="bg-gray-600 border-gray-500 text-gray-300 cursor-not-allowed mt-1"
                     />
@@ -301,10 +329,10 @@ export default function ManagePage() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="bg-gray-700 border-gray-600">
-                          <SelectItem value="Active" className="text-white hover:bg-gray-600">
+                          <SelectItem value="1" className="text-white hover:bg-gray-600">
                             Active
                           </SelectItem>
-                          <SelectItem value="Inactive" className="text-white hover:bg-gray-600">
+                          <SelectItem value="0" className="text-white hover:bg-gray-600">
                             Inactive
                           </SelectItem>
                         </SelectContent>
@@ -316,8 +344,8 @@ export default function ManagePage() {
                     <Label className="text-white text-sm">Expiration Date</Label>
                     <Input
                       type="datetime-local"
-                      value={isEditing ? editForm.expirationDate : selectedLink.expirationDate}
-                      onChange={(e) => setEditForm({ ...editForm, expirationDate: e.target.value })}
+                      value={isEditing ? editForm.expiring_at : selectedLink.expiring_at}
+                      onChange={(e) => setEditForm({ ...editForm, expiring_at: e.target.value })}
                       readOnly={!isEditing}
                       className={`mt-1 ${isEditing ? "bg-gray-700 border-gray-600 text-white [color-scheme:dark]" : "bg-gray-600 border-gray-500 text-gray-300"}`}
                     />
@@ -326,7 +354,7 @@ export default function ManagePage() {
 
                 {/* Action Buttons */}
                 <div className="flex items-center justify-between pt-4 border-t border-gray-600">
-                  <div className="flex space-x-3">
+                  {/* <div className="flex space-x-3">
                     <Button
                       variant="outline"
                       className="border-gray-600 text-gray-300 hover:bg-gray-600 bg-transparent"
@@ -338,7 +366,7 @@ export default function ManagePage() {
                       <Trash2 className="w-4 h-4 mr-2" />
                       Delete link
                     </Button>
-                  </div>
+                  </div> */}
 
                   <div className="flex space-x-3">
                     {isEditing ? (
@@ -348,7 +376,7 @@ export default function ManagePage() {
                           onClick={() => setIsEditing(false)}
                           className="border-gray-600 text-gray-300 hover:bg-gray-600 bg-transparent"
                         >
-                          Cancel
+                          Discard Changes
                         </Button>
                         <Button onClick={handleSaveChanges} className="bg-blue-600 text-white hover:bg-blue-700">
                           <Save className="w-4 h-4 mr-2" />

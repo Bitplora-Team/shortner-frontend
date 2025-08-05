@@ -1,17 +1,27 @@
 "use client"
 
-import { useState } from "react"
+import { useState,useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Link2, Copy, Check, ExternalLink, BarChart3, Settings } from "lucide-react"
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"
+
 
 export default function SuccessPage() {
-  const [shortLink] = useState("https://short.ly/abc123") // This would come from the form submission
-  const [originalUrl] = useState("https://example.com/very-long-url-that-was-shortened")
   const [copied, setCopied] = useState(false)
+  const [shortLink, setShortLink] = useState<string | null>(null);
+  const [originalUrl, setoriginalUrl] = useState<string | null>(null);
 
+  useEffect(() => {
+    const stored = localStorage.getItem("shortened_link");
+    if (stored) {
+      const data = JSON.parse(stored);
+      setoriginalUrl(`${data.link}`);
+      setShortLink(`${API_BASE_URL}/links/redirect/${data.shortened}`);
+    }
+  }, []);
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(shortLink)
@@ -21,6 +31,7 @@ export default function SuccessPage() {
       console.error("Failed to copy: ", err)
     }
   }
+
 
   return (
     <div className="min-h-screen bg-gray-900 relative overflow-hidden">

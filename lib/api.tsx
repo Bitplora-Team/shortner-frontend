@@ -43,7 +43,7 @@ export class LinkService {
   }
 
   static async updateLink(id: string, linkData: Partial<LinkData>): Promise<LinkData> {
-    const response = await apiRequest(`/links/edit/`, {
+    const response = await apiRequest(`/links/${id}/edit/`, {
       method: "patch",
       body: JSON.stringify(linkData),
     })
@@ -56,7 +56,7 @@ export class LinkService {
   }
 
   static async deleteLink(id: string): Promise<void> {
-    const response = await apiRequest(`/links/delete/`, {
+    const response = await apiRequest(`/links/${id}/delete/`, {
       method: "DELETE",
     })
 

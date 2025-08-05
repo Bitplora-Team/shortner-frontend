@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Link2, Check } from "lucide-react"
 import { LinkService } from "@/lib/api"
-
+import { useAuth } from "@/lib/auth"
 export default function HomePage() {
   const { user, logout } = useAuth()
+
 
   return (
     <div className="min-h-screen bg-gray-900">

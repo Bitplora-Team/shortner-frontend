@@ -29,7 +29,7 @@ export default function ShortenPage() {
     e.preventDefault();
 
     const linkData = {
-      originalUrl: url,
+      link: url,
       title,
       accessibleCountries,
       restrictedCountries,
@@ -43,7 +43,7 @@ export default function ShortenPage() {
     try {
       const createdLink = await LinkService.createLink(linkData);
       console.log("Created:", createdLink);
-
+      localStorage.setItem("shortened_link", JSON.stringify(createdLink.shortened));
       // ✅ Redirect after success
       window.location.href = "/success";
     } catch (err) {
