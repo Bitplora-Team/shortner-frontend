@@ -2,263 +2,175 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Link2, Home, Clipboard, LogOut, X, Calendar, BarChart3, Archive, Trash2, Edit3, Save } from "lucide-react"
-import { LinkService, LinkData } from "@/lib/api"
-import { useState, useEffect } from "react"
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"
-import { format } from "date-fns";
+import { Card, CardContent } from "@/components/ui/card"
+import { Link2, Check } from "lucide-react"
+import { useAuth } from "@/lib/auth"
 
-export default function ManagePage() {
-  const [selectedLink, setSelectedLink] = useState<any>(null)
-  const [isEditing, setIsEditing] = useState(false)
-  const [editForm, setEditForm] = useState<any>({})
-  const [user, setUser] = useState<any>(null)
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("auth_user")
-    if (storedUser) {
-      setUser(JSON.parse(storedUser))
-    }
-  }, [])
-
-  const [userLinks, setLinks] = useState<LinkData[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const fetchUserLinks = async () => {
-      try {
-        const data = await LinkService.getUserLinks()
-        setLinks(data)
-      } catch (err) {
-        console.error("Error fetching user links:", err)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchUserLinks()
-  }, [])
-
-  const handleEditLink = (link: any) => {
-    setSelectedLink(link)
-    setEditForm({ ...link })
-    setIsEditing(true)
-  }
-
-  const handleSaveChanges = () => {
-    try {
-      const updated = LinkService.updateLink(editForm.shortened!, editForm)
-      console.log("Saved:", updated)
-      setSelectedLink(updated)
-      setIsEditing(false)
-    } catch (error) {
-      console.error("Update failed:", error)
-      alert("Failed to update the link.")
-    }
-  }
-
-  const handleCloseModal = () => {
-    setSelectedLink(null)
-    setIsEditing(false)
-    setEditForm({})
-  }
+export default function HomePage() {
+  const { user, logout } = useAuth()
 
   return (
-    <div className="min-h-screen bg-gray-900 flex">
-      <div className="w-64 bg-gray-800 border-r border-gray-700">
-        <div className="p-4">
-          <div className="flex items-center mb-8">
-            <Link2 className="h-6 w-6 text-blue-400 mr-2" />
-            <span className="text-lg font-semibold text-white">LinkShortener</span>
-          </div>
-
-          <nav className="space-y-2">
-            <Link href="/" className="flex items-center px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors">
-              <Home className="w-4 h-4 mr-3" />
-              Home
-            </Link>
-
-            <Link href="/how-it-works" className="flex items-center px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors">
-              <BarChart3 className="w-4 h-4 mr-3" />
-              How it Works
-            </Link>
-
-            <Link href="/shorten" className="flex items-center px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors">
-              <Clipboard className="w-4 h-4 mr-3" />
-              Paste your link
-            </Link>
-
-            <div className="flex items-center px-3 py-2 text-white bg-blue-600 rounded-md">
-              <BarChart3 className="w-4 h-4 mr-3" />
-              Manage
+    <div className="min-h-screen bg-gray-900">
+      {/* Header */}
+      <header className="bg-gray-800 border-b border-gray-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <Link2 className="h-8 w-8 text-blue-400 mr-2" />
+              <span className="text-xl font-bold text-white">LinkShortener</span>
             </div>
 
-            <div className="px-3 py-4 border-t border-gray-700 mt-4">
-              <h3 className="text-sm font-medium text-gray-400 mb-3">Profile</h3>
-              <div className="space-y-2">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mr-3">
-                    <span className="text-white text-sm font-medium">
-                      {user?.first_name?.[0]?.toUpperCase()}{user?.last_name?.[0]?.toUpperCase()}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="text-white text-sm font-medium">{user?.first_name + ' ' + user?.last_name}</p>
-                    <p className="text-gray-400 text-xs">{user?.email}</p>
-                  </div>
-                </div>
+            <nav className="hidden md:flex space-x-8">
+              <Link href="/" className="text-white">
+                Home
+              </Link>
+              <Link href="/how-it-works" className="text-gray-300 hover:text-white transition-colors">
+                How it works
+              </Link>
+              <Link href="/purpose" className="text-gray-300 hover:text-white transition-colors">
+                Security
+              </Link>
+            </nav>
+
+            {user ? (
+              <div className="flex items-center space-x-4">
+                <span className="text-gray-300">Welcome, {user.firstName}</span>
+                <Button asChild className="bg-blue-600 text-white hover:bg-blue-700">
+                  <Link href="/dashboard">Dashboard</Link>
+                </Button>
+                <Button
+                  onClick={logout}
+                  variant="outline"
+                  className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+                >
+                  Logout
+                </Button>
+              </div>
+            ) : (
+              <Button asChild variant="outline" className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600">
+                <Link href="/auth">Sign In</Link>
+              </Button>
+            )}
+          </div>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-800 to-gray-900">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+                Shorten your links easily and quickly!
+              </h1>
+              <p className="text-lg text-gray-300 mb-8">
+                Create short links effortlessly with our tool. Secure your links from unauthorized access with IP-based
+                protection and advanced security features.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button asChild size="lg" className="bg-blue-600 text-white hover:bg-blue-700">
+                  <Link href="/shorten">Get started</Link>
+                </Button>
+                <Button
+                  asChild
+                  size="lg"
+                  variant="outline"
+                  className="border-gray-600 text-white hover:bg-gray-700 bg-transparent"
+                >
+                  <Link href="/how-it-works">How it works</Link>
+                </Button>
               </div>
             </div>
 
-            <button className="flex items-center px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors w-full text-left">
-              <LogOut className="w-4 h-4 mr-3" />
-              Log out
-            </button>
-          </nav>
+            <div className="flex justify-center lg:justify-end">
+              <div className="w-64 h-64 flex items-center justify-center">
+                <Link2 className="w-48 h-48 text-blue-400 opacity-80" strokeWidth={1} />
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
 
-      <div className="flex-1 flex">
-        <div className="flex-1 p-6">
-          <div className="max-w-4xl mx-auto">
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-white">Your Links</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {userLinks.map((link) => (
-                    <div key={link.id} className="bg-gray-700 rounded-lg p-4 border border-gray-600">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center space-x-3">
-                          <h3 className="text-white font-semibold">{link.title}</h3>
-                          <span className={`px-2 py-1 text-xs rounded-full ${link.status ? "bg-green-900 text-green-300" : link.status === false ? "bg-red-900 text-red-300" : "bg-gray-600 text-gray-300"}`}>
-                            {link.status ? "Active" : "Inactive"}
-                          </span>
-                        </div>
-                        <Button size="sm" variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-600 bg-transparent" onClick={() => handleEditLink(link)}>
-                          <Edit3 className="w-4 h-4 mr-2" />
-                          Manage
-                        </Button>
-                      </div>
+      {/* Stats Section */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-800">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Card className="bg-gray-700 border-gray-600 shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="text-sm text-gray-400 mb-1">Links secured</p>
+                    <p className="text-3xl font-bold text-white">1.8M+</p>
+                  </div>
+                  <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center">
+                    <Check className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-                      <div className="space-y-2 text-sm">
-                        <div>
-                          <span className="text-gray-400">Short URL: </span>
-                          <span className="text-blue-400 font-mono">{API_BASE_URL + '/links/redirect/' + link.shortened}</span>
-                        </div>
-                        <div>
-                          <span className="text-gray-400">Original: </span>
-                          <span className="text-gray-300 truncate block">{link.link}</span>
-                        </div>
-                        <div className="flex items-center space-x-4 text-xs text-gray-400">
-                          <span>{link.click_count} clicks</span>
-                          <span>{link.views} views</span>
-                          <span>Created: {format(new Date(link.created_at), "dd MMM, yyyy hh:mm a")}</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+            <Card className="bg-gray-700 border-gray-600 shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="text-sm text-gray-400 mb-1">Links shortened</p>
+                    <p className="text-3xl font-bold text-white">2M+</p>
+                  </div>
+                  <Link2 className="w-12 h-12 text-gray-400" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-700 border-gray-600 shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="text-sm text-gray-400 mb-1">Threats blocked</p>
+                    <p className="text-3xl font-bold text-white">15K+</p>
+                  </div>
+                  <Check className="w-12 h-12 text-gray-400" />
                 </div>
               </CardContent>
             </Card>
           </div>
         </div>
+      </section>
 
-        {selectedLink && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <Card className="w-full max-w-2xl bg-gray-800 border-gray-700 m-4 max-h-[90vh] overflow-y-auto">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-white">Link management</CardTitle>
-                  <Button variant="ghost" size="sm" onClick={handleCloseModal} className="text-gray-400 hover:text-white">
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <div>
-                    <Label className="text-white text-sm">Original URL (Read-only)</Label>
-                    <Input value={selectedLink.link} readOnly className="bg-gray-600 border-gray-500 text-gray-300 cursor-not-allowed mt-1" />
-                  </div>
-                  <div>
-                    <Label className="text-white text-sm">Short URL (Read-only)</Label>
-                    <Input value={API_BASE_URL + '/links/redirect/' + selectedLink.shortened} readOnly className="bg-gray-600 border-gray-500 text-gray-300 cursor-not-allowed mt-1" />
-                  </div>
-                </div>
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-12 px-4 sm:px-6 lg:px-8 border-t border-gray-700">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <h3 className="text-lg font-semibold mb-4 text-white">Welcome : User</h3>
+              <p className="text-gray-400">Simplifying your links</p>
+            </div>
 
-                <div className="space-y-4">
-                  <div>
-                    <Label className="text-white text-sm">Title</Label>
-                    <Input
-                      value={isEditing ? editForm.title : selectedLink.title}
-                      onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-                      readOnly={!isEditing}
-                      className={`mt-1 ${isEditing ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-600 border-gray-500 text-gray-300"}`}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label className="text-white text-sm">Status</Label>
-                      <Select
-                        value={isEditing ? editForm.status : selectedLink.status}
-                        onValueChange={(value) => setEditForm({ ...editForm, status: value })}
-                        disabled={!isEditing}
-                      >
-                        <SelectTrigger className={`mt-1 ${isEditing ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-600 border-gray-500 text-gray-300"}`}>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="bg-gray-700 border-gray-600">
-                          <SelectItem value="1" className="text-white hover:bg-gray-600">Active</SelectItem>
-                          <SelectItem value="0" className="text-white hover:bg-gray-600">Inactive</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label className="text-white text-sm">Expiration Date</Label>
-                    <Input
-                      type="datetime-local"
-                      value={isEditing ? editForm.expiring_at : selectedLink.expiring_at}
-                      onChange={(e) => setEditForm({ ...editForm, expiring_at: e.target.value })}
-                      readOnly={!isEditing}
-                      className={`mt-1 ${isEditing ? "bg-gray-700 border-gray-600 text-white [color-scheme:dark]" : "bg-gray-600 border-gray-500 text-gray-300"}`}
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between pt-4 border-t border-gray-600">
-                  <div className="flex space-x-3">
-                    {isEditing ? (
-                      <>
-                        <Button variant="outline" onClick={() => setIsEditing(false)} className="border-gray-600 text-gray-300 hover:bg-gray-600 bg-transparent">
-                          Discard Changes
-                        </Button>
-                        <Button onClick={handleSaveChanges} className="bg-blue-600 text-white hover:bg-blue-700">
-                          <Save className="w-4 h-4 mr-2" />
-                          Save Changes
-                        </Button>
-                      </>
-                    ) : (
-                      <Button onClick={() => setIsEditing(true)} className="bg-blue-600 text-white hover:bg-blue-700">
-                        <Edit3 className="w-4 h-4 mr-2" />
-                        Edit Link
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <div>
+              <h3 className="text-lg font-semibold mb-4 text-white">About</h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link href="/how-it-works" className="text-gray-400 hover:text-white transition-colors">
+                    How it Works
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/purpose" className="text-gray-400 hover:text-white transition-colors">
+                    Security
+                  </Link>
+                </li>
+                <li>
+                  <a
+                    href="mailto:laxman.suthar.dev@gmail.com"
+                    className="text-gray-400 hover:text-white transition-colors"
+                  >
+                    Contact: laxman.suthar.dev@gmail.com
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+      </footer>
     </div>
   )
 }
