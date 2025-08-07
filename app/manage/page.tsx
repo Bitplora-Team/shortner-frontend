@@ -163,7 +163,7 @@ export default function ManagePage() {
               <div className="space-y-2">
                 <div className="flex items-center">
                   <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mr-3">
-                    <span className="text-white text-sm font-medium">{user.first_name?.[0]?.toUpperCase()}{user.last_name?.[0]?.toUpperCase()}</span>
+                    <span className="text-white text-sm font-medium">{user?.first_name?.[0]?.toUpperCase()}{user?.last_name?.[0]?.toUpperCase()}</span>
                   </div>
                   <div>
                     <p className="text-white text-sm font-medium">{user?.first_name + ' ' + user?.last_name}</p>
