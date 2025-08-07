@@ -166,8 +166,8 @@ export default function ManagePage() {
                     <span className="text-white text-sm font-medium">{user.first_name?.[0]?.toUpperCase()}{user.last_name?.[0]?.toUpperCase()}</span>
                   </div>
                   <div>
-                    <p className="text-white text-sm font-medium">{user.first_name + ' ' + user.last_name}</p>
-                    <p className="text-gray-400 text-xs">{user.email}</p>
+                    <p className="text-white text-sm font-medium">{user?.first_name + ' ' + user?.last_name}</p>
+                    <p className="text-gray-400 text-xs">{user?.email}</p>
                   </div>
                 </div>
               </div>
