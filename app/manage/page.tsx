@@ -16,7 +16,14 @@ export default function ManagePage() {
   const [selectedLink, setSelectedLink] = useState<any>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [editForm, setEditForm] = useState<any>({})
-  const user = JSON.parse(localStorage.getItem("auth_user") || "{}");
+    const [user, setUser] = useState<any>(null)
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("auth_user")
+    if (storedUser) {
+      setUser(JSON.parse(storedUser))
+    }
+  }, [])
 
   const [userLinks, setLinks] = useState<LinkData[]>([]);
   const [loading, setLoading] = useState(true);
