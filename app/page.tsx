@@ -1,59 +1,25 @@
 "use client"
+import { Button } from "@/components/ui/button"
 
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Link2, Check } from "lucide-react"
-import { useAuth } from "@/lib/auth"
+import { LinkService } from "@/lib/api"
+import { useEffect, useState } from "react"
+
 
 export default function HomePage() {
-  const { user, logout } = useAuth()
-
+  const  [vars ,setVars] = useState({});
+  useEffect(()=>{
+    const fetchData=async()=>{
+ let getVars = await LinkService.home();
+    console.log(getVars);
+    setVars(getVars);
+    }
+   fetchData();
+  },[])
   return (
     <div className="min-h-screen bg-gray-900">
-      {/* Header */}
-      <header className="bg-gray-800 border-b border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Link2 className="h-8 w-8 text-blue-400 mr-2" />
-              <span className="text-xl font-bold text-white">LinkShortener</span>
-            </div>
-
-            <nav className="hidden md:flex space-x-8">
-              <Link href="/" className="text-white">
-                Home
-              </Link>
-              <Link href="/how-it-works" className="text-gray-300 hover:text-white transition-colors">
-                How it works
-              </Link>
-              <Link href="/purpose" className="text-gray-300 hover:text-white transition-colors">
-                Security
-              </Link>
-            </nav>
-
-            {user ? (
-              <div className="flex items-center space-x-4">
-                <span className="text-gray-300">Welcome, {user.firstName}</span>
-                <Button asChild className="bg-blue-600 text-white hover:bg-blue-700">
-                  <Link href="/dashboard">Dashboard</Link>
-                </Button>
-                <Button
-                  onClick={logout}
-                  variant="outline"
-                  className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
-                >
-                  Logout
-                </Button>
-              </div>
-            ) : (
-              <Button asChild variant="outline" className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600">
-                <Link href="/auth">Sign In</Link>
-              </Button>
-            )}
-          </div>
-        </div>
-      </header>
 
       {/* Hero Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-800 to-gray-900">
@@ -100,7 +66,7 @@ export default function HomePage() {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <p className="text-sm text-gray-400 mb-1">Links secured</p>
-                    <p className="text-3xl font-bold text-white">1.8M+</p>
+                    <p className="text-3xl font-bold text-white">{vars?.secured}</p>
                   </div>
                   <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center">
                     <Check className="w-6 h-6 text-white" />
@@ -114,7 +80,7 @@ export default function HomePage() {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <p className="text-sm text-gray-400 mb-1">Links shortened</p>
-                    <p className="text-3xl font-bold text-white">2M+</p>
+                    <p className="text-3xl font-bold text-white">{vars?.total}</p>
                   </div>
                   <Link2 className="w-12 h-12 text-gray-400" />
                 </div>
@@ -126,7 +92,7 @@ export default function HomePage() {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <p className="text-sm text-gray-400 mb-1">Threats blocked</p>
-                    <p className="text-3xl font-bold text-white">15K+</p>
+                    <p className="text-3xl font-bold text-white">{vars?.threat_blocked}</p>
                   </div>
                   <Check className="w-12 h-12 text-gray-400" />
                 </div>
@@ -155,7 +121,7 @@ export default function HomePage() {
                 </li>
                 <li>
                   <Link href="/purpose" className="text-gray-400 hover:text-white transition-colors">
-                    Security
+                    Purpose
                   </Link>
                 </li>
                 <li>

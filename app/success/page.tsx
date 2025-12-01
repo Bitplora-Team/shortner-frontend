@@ -1,26 +1,33 @@
 "use client"
 
-import { useState,useEffect } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Link2, Copy, Check, ExternalLink, BarChart3, Settings } from "lucide-react"
+import { redirect } from "next/dist/server/api-utils"
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"
-
+import { useRouter } from "next/navigation";
 
 export default function SuccessPage() {
   const [copied, setCopied] = useState(false)
-  const [shortLink, setShortLink] = useState<string | null>(null);
+  const [shortLink, setShortLink] = useState<string | ''>('');
   const [originalUrl, setoriginalUrl] = useState<string | null>(null);
-
+  const router = useRouter();
   useEffect(() => {
     const stored = localStorage.getItem("shortened_link");
     if (stored) {
       const data = JSON.parse(stored);
       setoriginalUrl(`${data.link}`);
       setShortLink(`${API_BASE_URL}/links/redirect/${data.shortened}`);
+      localStorage.removeItem('shortened_link');
+
     }
+    else{
+      router.push("/"); // ✅ Correct client-side redirect
+    }
+
   }, []);
   const copyToClipboard = async () => {
     try {
@@ -46,39 +53,6 @@ export default function SuccessPage() {
         }}
       />
 
-      {/* Header */}
-      <header className="relative z-10 bg-gray-800/90 backdrop-blur-sm border-b border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <span className="text-white text-sm">Welcome : User</span>
-            </div>
-
-            <div className="flex items-center">
-              <Link2 className="h-8 w-8 text-blue-400 mr-2" />
-              <span className="text-2xl font-bold text-white mr-8">LinkShortener</span>
-            </div>
-
-            <nav className="flex items-center space-x-6">
-              <Link href="/" className="text-gray-300 hover:text-white transition-colors text-sm">
-                Home
-              </Link>
-              <Link href="/how-it-works" className="text-gray-300 hover:text-white transition-colors text-sm">
-                Features
-              </Link>
-              <Link href="/purpose" className="text-gray-300 hover:text-white transition-colors text-sm">
-                About Us
-              </Link>
-              <Link href="/dashboard" className="text-gray-300 hover:text-white transition-colors text-sm">
-                My Account
-              </Link>
-              <Link href="/shorten" className="text-gray-300 hover:text-white transition-colors text-sm">
-                Shorten Link
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
 
       {/* Main Content */}
       <main className="relative z-10 flex items-center justify-center min-h-[calc(100vh-4rem)] px-4 sm:px-6 lg:px-8">
@@ -160,12 +134,6 @@ export default function SuccessPage() {
             <div className="mt-8 pt-6 border-t border-gray-600">
               <p className="text-sm text-gray-400 mb-4">Want to customize your link or view analytics?</p>
               <div className="flex flex-wrap justify-center gap-4">
-                <Button asChild variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-gray-700">
-                  <Link href="/customize">
-                    <Settings className="w-4 h-4 mr-2" />
-                    Customize Link
-                  </Link>
-                </Button>
                 <Button asChild variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-gray-700">
                   <Link href="/analytics">
                     <BarChart3 className="w-4 h-4 mr-2" />

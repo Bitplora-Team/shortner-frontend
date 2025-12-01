@@ -1,5 +1,5 @@
 import { apiRequest } from "./auth"
- // adjust path based on your structure
+// adjust path based on your structure
 export interface LinkData {
   id?: string
   originalUrl: string
@@ -74,4 +74,15 @@ export class LinkService {
 
     return response.json()
   }
+
+  static async home() {
+    const res = await apiRequest('/api/home/');
+    if (!res.ok) {
+      throw new Error("Server error");
+    }
+
+    const data = await res.json();  // <-- THIS gives you your actual data
+    return data;
+  }
+
 }

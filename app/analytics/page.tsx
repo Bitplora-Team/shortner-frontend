@@ -7,36 +7,7 @@ import { Link2, ArrowLeft, BarChart3, Eye, MousePointer, Globe, Calendar, Trendi
 export default function AnalyticsPage() {
   return (
     <div className="min-h-screen bg-gray-900">
-      {/* Header */}
-      <header className="bg-gray-800 border-b border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Link href="/" className="flex items-center">
-                <Link2 className="h-8 w-8 text-blue-400 mr-2" />
-                <span className="text-xl font-bold text-white">LinkShortener</span>
-              </Link>
-            </div>
-
-            <nav className="hidden md:flex space-x-8">
-              <Link href="/" className="text-gray-300 hover:text-white transition-colors">
-                Home
-              </Link>
-              <Link href="/how-it-works" className="text-gray-300 hover:text-white transition-colors">
-                How it works
-              </Link>
-              <Link href="/purpose" className="text-gray-300 hover:text-white transition-colors">
-                Security
-              </Link>
-            </nav>
-
-            <Link href="/success" className="flex items-center text-gray-300 hover:text-white transition-colors">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Link>
-          </div>
-        </div>
-      </header>
+      
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -46,7 +17,7 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           <Card className="bg-gray-800 border-gray-700">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -83,54 +54,6 @@ export default function AnalyticsPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-800 border-gray-700">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-400 mb-1">Growth</p>
-                  <p className="text-3xl font-bold text-white">+12%</p>
-                </div>
-                <TrendingUp className="w-12 h-12 text-orange-400" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Analytics Charts */}
-        <div className="grid lg:grid-cols-2 gap-8">
-          <Card className="bg-gray-800 border-gray-700">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center">
-                <BarChart3 className="w-5 h-5 mr-2 text-blue-400" />
-                Click Analytics
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-64 flex items-center justify-center text-gray-400">
-                <div className="text-center">
-                  <BarChart3 className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                  <p>Click analytics chart would be displayed here</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gray-800 border-gray-700">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center">
-                <Globe className="w-5 h-5 mr-2 text-green-400" />
-                Geographic Distribution
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-64 flex items-center justify-center text-gray-400">
-                <div className="text-center">
-                  <Globe className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                  <p>Geographic distribution map would be displayed here</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
 
         {/* Recent Activity */}

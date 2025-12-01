@@ -47,37 +47,6 @@ export default function DashboardPage() {
     }
   };
 
-  // const links = [
-  //   {
-  //     id: 1,
-  //     originalUrl: "https://example.com/very-long-url-that-was-shortened",
-  //     shortUrl: "https://short.ly/abc123",
-  //     clicks: 1247,
-  //     views: 2156,
-  //     created: "2024-01-15",
-  //     status: "Active",
-  //   },
-  //   {
-  //     id: 2,
-  //     originalUrl: "https://another-example.com/another-very-long-url",
-  //     shortUrl: "https://short.ly/def456",
-  //     clicks: 856,
-  //     views: 1432,
-  //     created: "2024-01-10",
-  //     status: "Active",
-  //   },
-  //   {
-  //     id: 3,
-  //     originalUrl: "https://test-site.com/some-page-with-long-parameters",
-  //     shortUrl: "https://short.ly/ghi789",
-  //     clicks: 234,
-  //     views: 567,
-  //     created: "2024-01-08",
-  //     status: "Expired",
-  //   },
-
-  // ]
-
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-gray-900">

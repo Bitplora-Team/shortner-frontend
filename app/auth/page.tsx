@@ -14,6 +14,7 @@ import { useAuth } from "@/lib/auth"
 import { extractUserInfoFromGoogle } from "@/lib/google-jwt"
 import { AuthDebug } from "@/components/auth-debug"
 
+
 declare global {
   interface Window {
     google: any

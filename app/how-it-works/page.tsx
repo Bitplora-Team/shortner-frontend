@@ -126,37 +126,6 @@ export default function HowItWorksPage() {
 
   return (
     <div className="min-h-screen bg-gray-900">
-      {/* Header */}
-      <header className="bg-gray-800 border-b border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Link href="/" className="flex items-center">
-                <Link2 className="h-8 w-8 text-blue-400 mr-2" />
-                <span className="text-xl font-bold text-white">LinkShortener</span>
-              </Link>
-            </div>
-
-            <nav className="hidden md:flex space-x-8">
-              <Link href="/" className="text-gray-300 hover:text-white transition-colors">
-                Home
-              </Link>
-              <Link href="/how-it-works" className="text-white">
-                How it works
-              </Link>
-              <Link href="/purpose" className="text-gray-300 hover:text-white transition-colors">
-                Security
-              </Link>
-            </nav>
-
-            <div className="flex items-center space-x-4">
-              <Button asChild variant="outline" className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600">
-                <Link href="/shorten">Try Now</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
 
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-gray-800 to-gray-900 py-20 px-4 sm:px-6 lg:px-8">
